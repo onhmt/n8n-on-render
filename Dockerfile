@@ -1,14 +1,16 @@
-# ใช้ Node.js เป็น base image
-FROM node:18-bullseye
+# ใช้ Node 20 (มี global File API ที่ n8n/oclif ต้องใช้)
+FROM node:20-bullseye
 
-# ตั้ง timezone เป็นประเทศไทย
+# ตั้งเวลา
 ENV GENERIC_TIMEZONE="Asia/Bangkok"
 
-# ติดตั้ง n8n
-RUN npm install -g n8n
+# ติดตั้ง n8n แบบ global
+RUN npm install -g n8n@latest
 
-# เปิดพอร์ต 5678 สำหรับ n8n
-EXPOSE 5678
+# Render จะให้ $PORT ตอนรัน: bind ตามนั้น
+# เปิดพอร์ตตัวอย่าง 10000 (จะถูกแทนที่ด้วย $PORT อยู่ดี)
+EXPOSE 10000
+ENV N8N_PORT=10000
 
-# รัน n8n
-CMD ["n8n", "start"]
+# บังคับให้ n8n ฟังพอร์ต $PORT ของ Render
+CMD ["sh", "-lc", "n8n start --port $PORT"]
